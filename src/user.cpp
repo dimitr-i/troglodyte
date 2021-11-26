@@ -21,11 +21,11 @@
 #include "external/time.h"
 #include "external/userDefinedStuff.h"
 
+#include "Math/Math.h"
+
 namespace trog
 {
 	void renderText();
-	float pyThereom(float a, float b);
-	glm::vec3 MoveTowards(glm::vec3 current, glm::vec3 target, float maxDistanceDelta);
 
 	int maxX = 0;
 	int maxY = 0;
@@ -45,7 +45,10 @@ namespace trog
 	rect healthRect(133.0f, 15.0f);
 	rect innerHealthRect(130.0f, 12.0f);
 
-	float innerHealthRectOffset = 143.0f;
+	rect staminaRect(15.0f, 102.0f);
+	rect innerStaminaRect(12.0f, 100.0f);
+
+	float stamina = 100.0f;
 
 	void trog::mainLoop() // ADD DELTA TIME TIMES EVERYTHING
 	{
@@ -131,7 +134,7 @@ namespace trog
 						{
 							//std::cout << "CREATED SPRITE! " << std::endl;
 
-							unsigned int enemyTexture = makeTexture::texture("../troglodyte/res/images/enemy.png");
+							unsigned int enemyTexture = makeTexture::texture("../troglodyte/res/images/enemyTexture.png");
 							Enemy* tempSprite = new Enemy(2, "enemy", enemyTexture);
 
 							tempSprite->position.x = x;
@@ -173,14 +176,8 @@ namespace trog
 
 		Sprite* mainSprite = GUI::getSpriteName("mainPlayer");
 
-		int inputX = inputManager::getAxisInput("horizontal") * 1.0f;// *35.0f * time_::deltaTime;
-		int inputY = inputManager::getAxisInput("vertical") * 1.0f;// *35.0f * time_::deltaTime;
-
-		mainSprite->position.x += inputX;
-		mainSprite->position.y += inputY;
-
-		camera::cameraPos.x += inputX;
-		camera::cameraPos.y += inputY;
+		float inputX = inputManager::getAxisInput("horizontal") * 0.4f; //*Time::deltaTime;// *35.0f * Time::deltaTime;
+		float inputY = inputManager::getAxisInput("vertical") * 0.4f; //*Time::deltaTime;// *35.0f * Time::deltaTime;
 
 		if (inputManager::keyPressed[GLFW_KEY_SPACE])
 		{
@@ -212,27 +209,33 @@ namespace trog
 			isPressed = false;
 		}
 
-		if (hasPressedSpace)
+		if (hasPressedSpace && stamina >= 80.0f)
 		{
 			float step = 4.0f;
-			mainSprite->position = MoveTowards(mainSprite->position, spriteToBeErased->position, step);
-
-			inputX = 0;
-			inputY = 0;
-
-			if (funcs::getDistance(mainSprite->position, spriteToBeErased->position) <= 1.0f)
+			try
 			{
-				enemyList.erase(std::remove(enemyList.begin(), enemyList.end(), spriteToBeErased), enemyList.end());
-
-				if (std::find(spriteList.begin(), spriteList.end(), spriteToBeErased) != spriteList.end())
-				{
-					std::cout << "IN SPRITE LIST! " << std::endl;
-				}
-
-				hasPressedSpace = false;
+				if (spriteToBeErased != NULL)
+					mainSprite->position = Vector::MoveTowards(mainSprite->position, spriteToBeErased->position, step);
+				else
+					throw 0;
 
 				inputX = 0;
 				inputY = 0;
+
+				if (funcs::getDistance(mainSprite->position, spriteToBeErased->position) <= 1.0f)
+				{
+					spriteToBeErased->die();
+
+					hasPressedSpace = false;
+
+					stamina -= 80.0f;
+				}
+			}
+
+			catch (int e)
+			{
+				// if e == 0, SPRITE == NULL
+				stamina -= 80.0f;
 			}
 
 			/*if (Sprite::isColliding(mainSprite, spriteToBeErased))
@@ -248,7 +251,27 @@ namespace trog
 			camera::cameraPos.y = mainSprite->position.y;
 		}
 
+		if (stamina <= 99.5f)
+		{
+			stamina += 0.5f;
+
+			if (hasPressedSpace && stamina < 80.0f)
+			{
+				hasPressedSpace = false;
+			}
+		}
+
+		//std::cout << stamina << std::endl;
+
+		innerStaminaRect.height = stamina;
+
 		//Image::renderImageFromUI(Image::heartTexture, glm::vec3(-0.75f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), true);
+
+		mainSprite->position.x += inputX;
+		mainSprite->position.y += inputY;
+
+		camera::cameraPos.x += inputX;
+		camera::cameraPos.y += inputY;
 
 		for (Sprite*& sprite : spriteList)
 		{
@@ -273,29 +296,14 @@ namespace trog
 		healthRect.renderRectNS(healthRect.width + 9.0f, (SCR_HEIGHT - healthRect.height) - 88.0f, glm::vec3(0.0f, 0.0f, 0.0f));
 		innerHealthRect.renderRectNS(healthRect.width - offsetInnerX + 9.0f + 3.0f, (SCR_HEIGHT - innerHealthRect.height) - (88.0f + offsetInnerY), glm::vec3(1.0f, 0.0f, 0.0f));
 
+		staminaRect.renderRectNS(staminaRect.width + 9.0f, (SCR_HEIGHT - staminaRect.height) - 122.0f, glm::vec3(0.0f, 0.0f, 0.0f));
+		innerStaminaRect.renderRectNS(innerStaminaRect.width + 9.0f + (staminaRect.width - innerStaminaRect.width), (SCR_HEIGHT - staminaRect.height) - 122.0f + (staminaRect.height - innerStaminaRect.height) - 1.5f, glm::vec3(21.0f / 255.0f, 235.0f / 255.0f, 217.0f / 255.0f));
+
 		//rect::renderRect(glm::vec3(15.0f, SCR_HEIGHT - 150.0f, 0.0f), glm::vec3(300.0f, 40.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), true); // HEALTH CONTAINR
 
 		//rect::renderRect(glm::vec3(21.0f, SCR_HEIGHT - 157.5f, 0.0f), glm::vec3(193.5f + healthSlider , 32.5f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), true); // HEALTH
 
-		renderText();
-	}
-
-	float pyThereom(float a, float b)
-	{
-		float result = pow(a, 2) + pow(b, 2);
-
-		return sqrt(result);
-	}
-
-	glm::vec3 MoveTowards(glm::vec3 current, glm::vec3 target, float maxDistanceDelta) //UNITY SOURCE CODE
-	{
-		glm::vec3 a = target - current;
-		float magnitude = glm::length(a);
-		if (magnitude <= maxDistanceDelta || magnitude == 0.0f)
-		{
-			return target;
-		}
-		return current + a / magnitude * maxDistanceDelta;
+		//renderText();
 	}
 
 	void renderText()

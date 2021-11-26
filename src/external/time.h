@@ -4,7 +4,7 @@
 
 namespace trog
 {
-	class time_
+	class Time
 	{
 	public:
 		static float deltaTime;

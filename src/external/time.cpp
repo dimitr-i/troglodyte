@@ -2,13 +2,13 @@
 
 namespace trog
 {
-	float time_::deltaTime = 0.0f;
-	float time_::lastFrame = 0.0f;
+	float Time::deltaTime = 0.0f;
+	float Time::lastFrame = 0.0f;
 
-	void time_::calculateDeltaTime()
+	void Time::calculateDeltaTime()
 	{
 		float currentFrame = glfwGetTime();
-		deltaTime = currentFrame - lastFrame;
+		deltaTime = (currentFrame - lastFrame);
 		lastFrame = currentFrame;
 	}
 }

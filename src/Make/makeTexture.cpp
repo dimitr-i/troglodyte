@@ -21,7 +21,13 @@ namespace trog
 		int s_ImageWidth, s_ImageHeight, nrChannels;
 		unsigned char* data = stbi_load(filepath, &s_ImageWidth, &s_ImageHeight, &nrChannels, 0);
 
-		GLenum format = GL_SRGB;
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+		GLenum format = GL_RGBA;
 		if (nrChannels == 1)
 			format = GL_RED;
 		else if (nrChannels == 3)

@@ -35,7 +35,7 @@ namespace trog
 
 	void camera::update()
 	{
-		float cameraSpeed = 5.0f * time_::deltaTime;
+		float cameraSpeed = 5.0f * Time::deltaTime;
 
 		if (canTakeGameInput)
 		{
@@ -104,7 +104,7 @@ namespace trog
 
 				if (inputManager::keyPressed[GLFW_KEY_LEFT_CONTROL])
 				{
-					cameraSpeed = 4.0f * time_::deltaTime;
+					cameraSpeed = 4.0f * Time::deltaTime;
 				}
 
 				cameraPos.y = 0.0f;

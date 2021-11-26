@@ -3,12 +3,24 @@
 namespace trog
 {
 	float funcs::playerHealth = 100.0f;
+	float funcs::playerRange = 4.0f;
+
+	int funcs::counterForPlayerDamage = 0;
 
 	void funcs::loseHealth(float &width)
 	{
-		playerHealth -= 10.0f;
-		if (width >= 13.0f)
-			width -= 13.0f;
+		//std::cout << counterForPlayerDamage << std::endl;
+
+		counterForPlayerDamage += 1;
+
+		if (counterForPlayerDamage >= 30)
+		{
+			playerHealth -= 10.0f;
+			if (width >= 13.0f)
+				width -= 13.0f;
+
+			counterForPlayerDamage = 0;
+		}
 	}
 
 	float funcs::getDistance(glm::vec3 player, glm::vec3 enemy)
@@ -16,8 +28,6 @@ namespace trog
 		float distanceX = abs(player.x - enemy.x);
 		float distanceY = abs(player.y - enemy.y);
 
-		float result = pow(distanceX, 2) + pow(distanceY, 2);
-
-		return sqrt(result);
+		return Math::hypo(distanceX, distanceY);
 	}
 }

@@ -270,16 +270,16 @@ namespace trog
 		{
 			if (!clean)
 			{
-				time_::calculateDeltaTime();
-				//std::cout << time_::deltaTime << std::endl;
+				Time::calculateDeltaTime();
+				//std::cout << Time::deltaTime << std::endl;
 
 				renderer::GetFPS();
 				//glfwSetWindowTitle(window, renderer::GetFPS().c_str());
 
 				//ImGuiFunctions::newFrame();
 
-				glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
-				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+				//glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
+				//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 				//makeFrameBuffer::bind();
 
